@@ -41,6 +41,8 @@
             --shadow-card: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.03);
             --shadow-card-hover: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06);
             --hero-gradient: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.12), transparent);
+            --glass-bg: rgba(24, 24, 27, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
         [data-theme="light"] {
@@ -57,6 +59,8 @@
             --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
             --shadow-card-hover: 0 8px 32px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.06);
             --hero-gradient: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.06), transparent);
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(0, 0, 0, 0.08);
         }
 
         html {
@@ -132,6 +136,18 @@
         }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
 
+        /* ===== SCROLL PROGRESS BAR ===== */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), #818cf8, var(--accent-light));
+            width: 0%;
+            z-index: 1001;
+            transition: width 0.1s linear;
+        }
+
         /* ===== NAVIGATION ===== */
         .nav {
             position: fixed;
@@ -198,8 +214,13 @@
             transition: width var(--transition);
         }
 
-        .nav-links a:hover::after {
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
             width: 100%;
+        }
+
+        .nav-links a.active {
+            color: var(--text-primary);
         }
 
         .theme-toggle {
@@ -313,35 +334,7 @@
             pointer-events: none;
         }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px 6px 8px;
-            background: var(--accent-glow);
-            border: 1px solid rgba(37, 99, 235, 0.2);
-            border-radius: 100px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--accent-light);
-            margin-bottom: 32px;
-            animation: fadeUp 0.8s ease both;
-        }
-
-        .hero-badge-dot {
-            width: 8px;
-            height: 8px;
-            background: #22c55e;
-            border-radius: 50%;
-            animation: pulse-dot 2s ease infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(0.85); }
-        }
-
-        .hero-name {
+.hero-name {
             font-size: clamp(40px, 7vw, 72px);
             font-weight: 800;
             letter-spacing: -0.04em;
@@ -351,10 +344,17 @@
         }
 
         .hero-name .gradient-text {
-            background: linear-gradient(135deg, var(--accent), #818cf8, var(--accent-light));
+            background: linear-gradient(90deg, var(--accent), #818cf8, #c084fc, var(--accent-light), var(--accent));
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: gradientFlow 4s linear infinite;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
         }
 
         .hero-title {
@@ -363,6 +363,41 @@
             color: var(--text-secondary);
             margin-bottom: 24px;
             animation: fadeUp 0.8s ease 0.2s both;
+            min-height: 1.6em;
+        }
+
+        .hero-title .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: charReveal 0.4s ease forwards;
+        }
+
+        @keyframes charReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--accent);
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            opacity: 0;
+            animation: cursorFadeIn 0.1s ease forwards, cursorBlink 1s step-end infinite;
+        }
+
+        @keyframes cursorFadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
         .hero-tagline {
@@ -479,11 +514,13 @@
         }
 
         .about-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             padding: 40px;
             box-shadow: var(--shadow-card);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
             width: 100%;
             max-width: 440px;
         }
@@ -530,11 +567,13 @@
         }
 
         .service-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             padding: 36px;
             box-shadow: var(--shadow-card);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
             transition: all var(--transition);
             position: relative;
             overflow: hidden;
@@ -601,12 +640,14 @@
         }
 
         .skill-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             padding: 32px 24px;
             text-align: center;
             box-shadow: var(--shadow-card);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
             transition: all var(--transition);
         }
 
@@ -714,11 +755,13 @@
         }
 
         .contact-form-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius);
             padding: 40px;
             box-shadow: var(--shadow-card);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
         }
 
         .form-group {
@@ -944,6 +987,9 @@
     <!-- ===== ANIMATED GRADIENT BG ===== -->
     <div class="gradient-bg"></div>
 
+    <!-- ===== SCROLL PROGRESS BAR ===== -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
     <!-- ===== NAVIGATION ===== -->
     <nav class="nav" id="nav">
         <div class="nav-inner">
@@ -969,15 +1015,11 @@
     <!-- ===== HERO ===== -->
     <section class="hero" id="hero">
         <div class="container">
-            <div class="hero-badge">
-                <div class="hero-badge-dot"></div>
-                Available for freelance work
-            </div>
-            <h1 class="hero-name">
+<h1 class="hero-name">
                 Gajendra Pratap<br><span class="gradient-text">Singh Jadoun</span>
             </h1>
-            <p class="hero-title">Full Stack Software Engineer</p>
-            <p class="hero-tagline">Building modern websites and mobile apps for global clients. Turning ideas into polished, scalable digital products.</p>
+            <p class="hero-title" id="heroTitle">Full Stack Software Engineer</p>
+            <p class="hero-tagline">Building modern websites and mobile apps for global clients. Currently open to new projects and collaborations.</p>
             <div class="hero-actions">
                 <a href="#contact" class="btn btn-primary">
                     Get in Touch
@@ -1376,17 +1418,40 @@
 
         revealElements.forEach(el => revealObserver.observe(el));
 
-        // Navbar background on scroll
+        // Navbar background on scroll + progress bar
         const nav = document.getElementById('nav');
+        const scrollProgress = document.getElementById('scrollProgress');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 20) {
                 nav.style.borderBottomColor = 'var(--border)';
             } else {
                 nav.style.borderBottomColor = 'transparent';
             }
+            // Scroll progress bar
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            scrollProgress.style.width = progress + '%';
         });
         // Set initial state
         nav.style.borderBottomColor = 'transparent';
+
+        // Active nav indicator on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navAnchors = document.querySelectorAll('.nav-links a');
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navAnchors.forEach(a => {
+                        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+                    });
+                }
+            });
+        }, { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' });
+
+        sections.forEach(section => sectionObserver.observe(section));
 
         // Contact Form
         const contactForm = document.getElementById('contactForm');
@@ -1432,6 +1497,22 @@
                 }
             });
         });
+        // Letter-by-letter animation for hero title
+        const heroTitle = document.getElementById('heroTitle');
+        const text = heroTitle.textContent;
+        heroTitle.textContent = '';
+        text.split('').forEach((char, i) => {
+            const span = document.createElement('span');
+            span.className = 'char';
+            span.textContent = char === ' ' ? '\u00A0' : char;
+            span.style.animationDelay = `${0.8 + i * 0.04}s`;
+            heroTitle.appendChild(span);
+        });
+        // Blinking cursor after animation
+        const cursor = document.createElement('span');
+        cursor.className = 'hero-cursor';
+        cursor.style.animationDelay = `${0.8 + text.length * 0.04}s, ${0.8 + text.length * 0.04}s`;
+        heroTitle.appendChild(cursor);
     </script>
 </body>
 </html>
